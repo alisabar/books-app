@@ -121,7 +121,7 @@ class MyModal extends React.Component {
   replaceInvalid=(words)=>{
     console.log("in replaceInvalid.");
     console.log("words: ",words);
-    const validSentence=words.replace(/[^a-zA-Z ]/g, '');
+    const validSentence=words.toString().replace(/[^a-zA-Z ]/g, '');
     console.log("validSentence: ",validSentence);
     return validSentence;
 
