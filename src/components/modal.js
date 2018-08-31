@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {setDateTime, setDateTimeNormal, getCurrentDate} from '../date';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
@@ -8,9 +8,9 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-const dateFormat = require('dateformat');
 
 const styles = theme => ({
+
      paper: {
         position: 'absolute',
         left:'25%',
@@ -34,7 +34,7 @@ const styles = theme => ({
     textField: {
         marginLeft: 0,
         marginRight: 0,
-        width: 200,
+        width: '100%',
     },
     feedbackMessage:{
          marginLeft:'2%',
@@ -58,16 +58,18 @@ class MyModal extends React.Component {
     this.validateAuthorName=this.validateAuthorName.bind(this);
     this.validateBookTitle=this.validateBookTitle.bind(this);
     this.validatePublishedDate=this.validatePublishedDate.bind(this);
-    this.setDateTime=this.setDateTime.bind(this);
+   // this.setDateTime=this.setDateTime.bind(this);
     this.repairInputString=this.repairInputString.bind(this);
     this.repairAuthorName=this.repairAuthorName.bind(this);
     this.repairBookTitle=this.repairBookTitle.bind(this);
     this.replaceInvalid=this.replaceInvalid.bind(this);
     this.setNewValues=this.setNewValues.bind(this);
+   // this.setDateTimeNormal=this.setDateTimeNormal.bind(this);
     this.setBooksValues = this.props.setBooksValues;
     this.setAuthorName = this.props.setAuthorName;
     this.setPublishedDate=this.props.setPublishedDate;
     this.setBookTitle=this.props.setBookTitle;
+
 
         this.state = {
 
@@ -145,11 +147,6 @@ class MyModal extends React.Component {
     this.setState({bookTitle:newAuthor,validBookTitle:true});
 
   };
-  setDateTime(itemDate) {
-    const date = new Date(itemDate);
-    const formateDate = dateFormat(date,"shortDate");
-    return formateDate;
-  }
 
     validateString=(str)=>{
       const validRegEx = /^[^\\\/&@$!%#^*]*$/;
@@ -173,7 +170,7 @@ class MyModal extends React.Component {
 
     validatePublishedDate=(event)=> {
       const newDate=event.target.value;
-      this.setState({publishedDate:this.setDateTime(newDate)});
+      this.setState({publishedDate:setDateTime(newDate)});
     };
 
     setNewValues=(e)=>{
@@ -186,7 +183,7 @@ class MyModal extends React.Component {
           this.setBooksValues({
               authorName: newAuthorName ? newAuthorName : '',
               bookTitle: newBookTitle ? newBookTitle : '',
-              publishedDate: this.state.publishedDate ? this.state.publishedDate:'',
+              publishedDate: this.state.publishedDate ? setDateTime(this.state.publishedDate):'',
           });
         }
         this.handleClose();
@@ -203,7 +200,7 @@ class MyModal extends React.Component {
             >
                 <div  className={classes.paper}>
                      <div className="row">
-                        <div className="col-sm-12 col-md-6 col-lg-6">
+                        <div className="col-sm-12 col-md-8 col-lg-8">
                             <TextField
                               id="author"
                               label="Author Name"
@@ -214,14 +211,14 @@ class MyModal extends React.Component {
                             />
                             <FormHelperText>{this.state.validAuthorName ? '':'Error. Wrong input.'}</FormHelperText>
                         </div>
-                         <div className="col-sm-12 col-md-6 col-lg-6" className={classes.repairButton}>
+                         <div className="col-sm-12 col-md-4 col-lg-4" className={classes.repairButton}>
                             <Button color="primary"  disabled={this.state.validAuthorName ? true : false} onClick={(event)=>this.repairAuthorName(event)}>
                                 Repair Input
                             </Button>
                          </div>
                      </div>
                      <div className="row">
-                        <div className="col-sm-12 col-md-6 col-lg-6">
+                        <div className="col-sm-12 col-md-8 col-lg-8">
                             <TextField
                               id="name"
                               label="Book Title"
@@ -232,20 +229,20 @@ class MyModal extends React.Component {
                             />
                              <FormHelperText>{this.state.validBookTitle ? '':'Error. Wromg input.'}</FormHelperText>
                          </div>
-                         <div className="col-sm-12 col-md-6 col-lg-6" className={classes.repairButton}>
+                         <div className="col-sm-12 col-md-4 col-lg-4" className={classes.repairButton}>
                              <Button color="primary"  disabled={this.state.validBookTitle ? true : false} onClick={(event)=>this.repairBookTitle(event)}>
                                 Repair Input
                              </Button>
                          </div>
                      </div>
                       <div className="row">
-                        <div className="col-sm-12 col-md-12 col-lg-12">
+                        <div className="col-sm-12 col-md-8 col-lg-8" >
                             <TextField
                               id="date"
-                              label="Publication Date"
+                              label="Publication Date(mm-dd-yyyy)"
                               type="date"
                               className={classes.textField}
-                              defaultValue={this.state.publishedDate ? this.state.publishedDate : ''}
+                              defaultValue={this.state.publishedDate ? this.state.publishedDate : getCurrentDate()}
                               onChange={this.validatePublishedDate}
                               margin="normal"
                             />
@@ -309,7 +306,7 @@ class MyModal extends React.Component {
                         </div>
                         <div className="col-sm-12 col-md-6 col-lg-8">
                             <Typography  className={classes.feedbackMessage}>
-                                {this.state.publishedDate? this.state.publishedDate :'' }
+                                {this.state.publishedDate? setDateTimeNormal(this.state.publishedDate) :'' }
                             </Typography>
                         </div>
                     </div>

@@ -12,10 +12,7 @@ import Header from './header';
 import MyModal from './modal';
 import Book from './book';
 import '../App.css';
-//import BookStore from './store'
 import {withStyles} from "@material-ui/core/styles/index";
-
-const dateFormat = require('dateformat');
 
 
 const styles = theme => ({
@@ -30,7 +27,9 @@ const styles = theme => ({
         boxShadow: theme.shadows[5],
         padding: theme.spacing.unit * 4,
     },
-
+    modal:{
+         zIndex:'2',
+    },
   card: {
       marginTop:'1%',
       backgroundColor:'#FFCCBC',
@@ -53,7 +52,6 @@ const styles = theme => ({
            this.addNewBook = this.addNewBook.bind(this);
            this.handleOpen = this.handleOpen.bind(this);
            this.handleClose = this.handleClose.bind(this);
-           this.setDateTime = this.setDateTime.bind(this);
             this.handleCloseFeedbackDelete = this.handleCloseFeedbackDelete.bind(this);
 
            this.state = {
@@ -125,11 +123,15 @@ const styles = theme => ({
             const newTitle=o.bookTitle;
             const oldBook=books.filter(book=>book.key===newTitle);
             console.log('oldBook: ', oldBook);
-            if(oldBook){
-                 console.log('oldBook: ', oldBook);
+            if(oldBook.length>0){
+                if(oldBook[0].key===newTitle){
+                    console.log('oldBook[0]: ', oldBook[0]);
+                    console.log('oldBook[0].key: ', oldBook[0].key);
 
-                this.setState({existingBook:true});
+                    this.setState({existingBook:true});
+                }
             }
+
             else {
                 books.push(<div key={o.bookTitle ? o.bookTitle : ''} className="col-sm-12 col-md-6 col-lg-4">
                     <Book
@@ -149,11 +151,6 @@ const styles = theme => ({
             }
         };
 
-      setDateTime(itemDate) {
-        const date = new Date(itemDate);
-        const formateDate = dateFormat(date,"shortDate");
-        return formateDate;
-      }
 
         render() {
            const { classes } = this.props;
@@ -181,6 +178,7 @@ const styles = theme => ({
                   >
                   </MyModal>
                   <Modal
+                        className={classes.modal}
                         aria-labelledby="simple-modal-title"
                         aria-describedby="simple-modal-description"
                         open={this.state.existingBook}

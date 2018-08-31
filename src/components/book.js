@@ -1,4 +1,5 @@
 import React from 'react';
+import {setDateTime, setDateTimeNormal} from '../date';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
@@ -8,7 +9,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import MyModal from './modal';
 import '../App.css';
-const dateFormat = require('dateformat');
 
 const styles = theme => ({
   media: {
@@ -41,7 +41,6 @@ class Book extends React.Component {
 
     this.handleOpen=this.handleOpen.bind(this);
     this.handleClose=this.handleClose.bind(this);
-    this.setDateTime=this.setDateTime.bind(this);
     this.deleteMe=this.deleteMe.bind(this);
     this.setBookValues=this.setBookValues.bind(this);
     this.cutLongString=this.cutLongString.bind(this);
@@ -85,15 +84,10 @@ class Book extends React.Component {
   };
   setBookValues=(o)=>{
        this.setState({authorName:o.authorName ? o.authorName: 'error'});
-       this.setState({publishedDate: o.publishedDate ? o.publishedDate : ''});
+       this.setState({publishedDate: o.publishedDate ? setDateTime(o.publishedDate) : ''});
        this.setState({bookTitle:o.bookTitle ? o.bookTitle :'erroe'});
   };
 
-  setDateTime(itemDate) {
-    const date = new Date(itemDate);
-    const formateDate = dateFormat(date,"shortDate");
-    return formateDate;
-  }
 
   handleOpen = () => {
     this.setState({ open: true });
@@ -105,7 +99,7 @@ class Book extends React.Component {
 
       let newArray = [];
       const words = str.split(" ");
-      if (words.length > 12) {
+      if (words.length > 10) {
           for (let i = 0; i < 4; i++) {
               newArray[i] = words[i];
           }
@@ -142,7 +136,7 @@ class Book extends React.Component {
             </Typography>
 
             <Typography className="classes.blackTitle" >
-                {this.state.publishedDate}
+                {setDateTimeNormal(this.state.publishedDate)}
             </Typography>
             <div >
                 <img src={this.state.bookImage} height="200"></img>
@@ -159,7 +153,7 @@ class Book extends React.Component {
                 open={this.state.open}
                 close={()=> this.handleClose()}
                 authorName={this.state.authorName? this.state.authorName:''}
-                publishedDate={this.state.publishedDate ? this.state.publishedDate: '' }
+                publishedDate={this.state.publishedDate ? setDateTime(this.state.publishedDate): '' }
                 bookTitle={this.state.bookTitle? this.state.bookTitle :''}
                 setBooksValues={(o) => {this.setBookValues(o)}}
             >
