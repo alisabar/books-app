@@ -13,6 +13,7 @@ import MyModal from './modal';
 import Book from './book';
 import '../App.css';
 import {withStyles} from "@material-ui/core/styles/index";
+import {setDateTime} from "../date";
 
 
 const styles = theme => ({
@@ -42,25 +43,24 @@ const styles = theme => ({
 });
 
 
-//const App = observer(
     class Books extends React.Component {
        constructor(props) {
            super(props);
 
            this.createData = this.createData.bind(this);
            this.deleteBook = this.deleteBook.bind(this);
-           this.addNewBook = this.addNewBook.bind(this);
            this.handleOpen = this.handleOpen.bind(this);
            this.handleClose = this.handleClose.bind(this);
-            this.handleCloseFeedbackDelete = this.handleCloseFeedbackDelete.bind(this);
-
+           this.handleCloseFeedbackDelete = this.handleCloseFeedbackDelete.bind(this);
+           this.updateList=this.updateList.bind(this);
+           //this.handleCloseExistingBookModal=this.handleCloseExistingBookModal.bind(this);
            this.state = {
                open: false,
                feedBackDelete:false,
                booksList: '',
                booksAfterDelete: '',
                bookWasDeleted: false,
-               existingBook:false,
+            //   existingBook:false,
            };
        }
 
@@ -74,17 +74,17 @@ const styles = theme => ({
         handleCloseFeedbackDelete=()=>{
              this.setState({ feedBackDelete: false });
         };
-        handleCloseExistingBookModal=()=>{
-              this.setState({ existingBook: false });
-        };
+        // handleCloseExistingBookModal=()=>{
+        //       this.setState({ existingBook: false });
+        // };
         componentWillMount(){
 
            axios.get(`https://www.googleapis.com/books/v1/volumes?q=cat&filter=paid-ebooks&startIndex=0&maxResults=26`)
           .then(res => {
             const books = res.data;
 
-            console.log(books.items.length);
-            console.log(JSON.stringify(books.items));
+            //console.log(books.items.length);
+            //console.log(JSON.stringify(books.items));
             this.createData(books.items);
           });
         }
@@ -99,7 +99,7 @@ const styles = theme => ({
                   publishedDate={book.volumeInfo.publishedDate}
                   bookTitle={book.volumeInfo.title}
                   bookImage={book.volumeInfo.imageLinks.thumbnail}
-                   deleted={o => {
+                  deleted={o => {
                       this.deleteBook(o.bookId);
                     }}
                 />
@@ -117,40 +117,10 @@ const styles = theme => ({
             this.setState({feedBackDelete:true});
         };
 
-        addNewBook=(o)=>{
-            console.log('this.state.bookList: ',this.state.booksList);
-            let books=this.state.booksList;
-            const newTitle=o.bookTitle;
-            const oldBook=books.filter(book=>book.key===newTitle);
-            console.log('oldBook: ', oldBook);
-            if(oldBook.length>0){
-                if(oldBook[0].key===newTitle){
-                    console.log('oldBook[0]: ', oldBook[0]);
-                    console.log('oldBook[0].key: ', oldBook[0].key);
-
-                    this.setState({existingBook:true});
-                }
-            }
-
-            else {
-                books.push(<div key={o.bookTitle ? o.bookTitle : ''} className="col-sm-12 col-md-6 col-lg-4">
-                    <Book
-                        key={o.bookTitle ? o.bookTitle : ''}
-                        bookId={this.state.booksList.length}
-                        authorName={o.authorName ? o.authorName : ''}
-                        publishedDate={o.publishedDate ? o.publishedDate : ''}
-                        bookTitle={o.bookTitle ? o.bookTitle : ''}
-                        deleted={m => {
-                            this.deleteBook(m.bookId);
-                        }}
-
-                    />
-                </div>);
-
-                this.setState({bookList: books});
-            }
+        updateList=(o)=>{
+            const books=o.books;
+            this.setState({booksList:books});
         };
-
 
         render() {
            const { classes } = this.props;
@@ -171,33 +141,38 @@ const styles = theme => ({
                             </CardContent>
                       </Card>
                   </div>
+
                   <MyModal
                        open={this.state.open}
                        close={()=> this.handleClose()}
-                       setBooksValues={(o) => {this.addNewBook(o)}}
+                       bookList={this.state.booksList ? this.state.booksList : ''}
+                       authorName={''}
+                       publishedDate={''}
+                       bookTitle={''}
+                       setBooksValues={(o)=>this.updateList(o)}
                   >
                   </MyModal>
-                  <Modal
-                        className={classes.modal}
-                        aria-labelledby="simple-modal-title"
-                        aria-describedby="simple-modal-description"
-                        open={this.state.existingBook}
-                        onClose={this.handleCloseExistingBookModal}
-                  >
-                        <div className={classes.modalFeedBack}>
-                             <Typography  className={classes.feedbackMessage}>
-                                  Error! Book already exists!
-                             </Typography>
-                             <br/>
-                             <Button
-                                className={classes.buttonFeedBack}
-                                color="secondary"
-                                onClick={this.handleCloseExistingBookModal}
-                              >
-                              OK
-                              </Button>
-                          </div>
-                  </Modal>
+                  {/*<Modal*/}
+                        {/*className={classes.modal}*/}
+                        {/*aria-labelledby="simple-modal-title"*/}
+                        {/*aria-describedby="simple-modal-description"*/}
+                        {/*open={this.state.existingBook}*/}
+                        {/*onClose={this.handleCloseExistingBookModal}*/}
+                  {/*>*/}
+                        {/*<div className={classes.modalFeedBack}>*/}
+                             {/*<Typography  className={classes.feedbackMessage}>*/}
+                                  {/*Error! Book already exists!*/}
+                             {/*</Typography>*/}
+                             {/*<br/>*/}
+                             {/*<Button*/}
+                                {/*className={classes.buttonFeedBack}*/}
+                                {/*color="secondary"*/}
+                                {/*onClick={this.handleCloseExistingBookModal}*/}
+                              {/*>*/}
+                              {/*OK*/}
+                              {/*</Button>*/}
+                          {/*</div>*/}
+                  {/*</Modal>*/}
                   <Modal
                         aria-labelledby="simple-modal-title"
                         aria-describedby="simple-modal-description"
@@ -223,8 +198,6 @@ const styles = theme => ({
         };
 
     }
-    //);
-//decorate(App, { page: observable, cities: observable })
 Books.propTypes = {
   classes: PropTypes.object.isRequired,
 };

@@ -40,9 +40,9 @@ class Book extends React.Component {
     super(props);
 
     this.handleOpen=this.handleOpen.bind(this);
-    this.handleClose=this.handleClose.bind(this);
+    this.handleEditClose=this.handleEditClose.bind(this);
     this.deleteMe=this.deleteMe.bind(this);
-    this.setBookValues=this.setBookValues.bind(this);
+    this.editBookValues=this.editBookValues.bind(this);
     this.cutLongString=this.cutLongString.bind(this);
     this.toggleHover=this.toggleHover.bind(this);
 
@@ -68,7 +68,7 @@ class Book extends React.Component {
         : '',
         showLongTitle:false,
         shortBookTitle:'',
-        open:false,
+        openToEdit:false,
     };
   }
   componentDidMount(){
@@ -82,18 +82,19 @@ class Book extends React.Component {
       });
     }
   };
-  setBookValues=(o)=>{
-       this.setState({authorName:o.authorName ? o.authorName: 'error'});
-       this.setState({publishedDate: o.publishedDate ? setDateTime(o.publishedDate) : ''});
-       this.setState({bookTitle:o.bookTitle ? o.bookTitle :'erroe'});
+
+  editBookValues=(o)=>{
+
+       this.setState({authorName: o.authorName, publishedDate: setDateTime(o.publishedDate) ,bookTitle: o.bookTitle});
+
   };
 
 
   handleOpen = () => {
-    this.setState({ open: true });
+    this.setState({ openToEdit: true });
   };
-    handleClose = () => {
-    this.setState({ open: false });
+    handleEditClose = () => {
+    this.setState({ openToEdit: false });
   };
   cutLongString=(str)=> {
 
@@ -109,10 +110,7 @@ class Book extends React.Component {
           this.setState({shortBookTitle:newString});
       }
 
-
-
   };
-
 
   toggleHover=()=>{
      this.setState(prevState => ({
@@ -132,7 +130,7 @@ class Book extends React.Component {
             </Typography>
 
              <Typography className="classes.blackTitle" >
-                {this.state.authorName}
+                {this.state.authorName ? this.state.authorName : ''}
             </Typography>
 
             <Typography className="classes.blackTitle" >
@@ -150,15 +148,14 @@ class Book extends React.Component {
             <Button  size="small" color="primary" onClick={this.handleOpen}>Edit</Button>
             <Button  size="small" color="secondary" onClick={this.deleteMe}><DeleteIcon/></Button>
             <MyModal
-                open={this.state.open}
-                close={()=> this.handleClose()}
+                open={this.state.openToEdit}
+                close={()=>this.handleEditClose()}
                 authorName={this.state.authorName? this.state.authorName:''}
                 publishedDate={this.state.publishedDate ? setDateTime(this.state.publishedDate): '' }
                 bookTitle={this.state.bookTitle? this.state.bookTitle :''}
-                setBooksValues={(o) => {this.setBookValues(o)}}
+                editBooksValues={(o)=>this.editBookValues(o)}
             >
             </MyModal>
-
         </div>
       )
   }
