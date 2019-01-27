@@ -72,7 +72,10 @@ class Book extends React.Component {
     };
   }
   componentDidMount(){
-    this.state.bookTitle.length>0 ? this.cutLongString(this.state.bookTitle): false;
+
+    if(this.state.bookTitle.length>0 ){
+      this.cutLongString(this.state.bookTitle);
+    }
 
   }
   deleteMe=()=>{
